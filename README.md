@@ -7,8 +7,8 @@ An easy way to use pull-to-refresh and pull-to-load-more. This repo was learn fr
 - [x] Pull Down from top to Refresh.
 - [x] Pull Up from bottom to load more data.
 - [x] Basic configuration to display refresh/load state.
-- [] Layout of pull views can be more diverse.
-- [] Easy to Localization.
+- [ ] Layout of pull views can be more diverse.
+- [ ] Easy to Localization.
 
 ## Requirements
 * iOS 8.0+
