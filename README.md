@@ -3,12 +3,14 @@ An easy way to use pull-to-refresh and pull-to-load-more. This repo was learn fr
 
 [![SwiftPackageManager Compatible](https://img.shields.io/badge/SwiftPackageManager-compatible-orange)](https://img.shields.io/badge/SwiftPackageManager-compatible-orange)
 
+[中文](README_zh.md)
+
 ## Features
 - [x] Pull Down from top to Refresh.
 - [x] Pull Up from bottom to load more data.
 - [x] Basic configuration to display refresh/load state.
 - [ ] Layout of pull views can be more diverse.
-- [ ] Easy to Localization.
+- [ ] Text Easy to Localization.
 
 ## Requirements
 * iOS 8.0+
@@ -75,24 +77,24 @@ scrollView.spot_pullDownRefreshView = refresher
 ```
 * Pull up Load more
 ```
-// Superclass of pull down refresh view
+// Superclass of pull up load view
 class PullLoadView: PullBaseView
 
-// View with state label and last updated time label
+// View with state label
 class PullLoadStateView: PullLoadView
 
-// View with arrowView and indicator (show on loading, left of state label) 
+// View with indicator (show on loading, left of state label) 
 class PullLoadIndicationStateView: PullLoadStateView
 
 // View with imageView to present animation (show on loading)
 class PullLoadAnimationStateView: PullLoadStateView
 ```
-In your viewDidLoad(), do almost same thing to make pull view:
+In your viewDidLoad(), do almost same thing to make pull down view:
 ```
 let moreDataLoader = PullLoadIndicationStateView { [weak self] in
 	// do something like make URLRequest on sub thread
 	...
-	// after finished, notify refresher
+	// after finished, notify moreDataLoader
 	DispatchQueue.main.async {
 		guard let self = self,
 			let pullUp = self.tableView.spot_pullUpLoadView
@@ -104,7 +106,7 @@ let moreDataLoader = PullLoadIndicationStateView { [weak self] in
 		}
 	}
 }
-// do something to config refresher, e.g.
+// do something to config moreDataLoader, e.g.
 // set moreDataLoader.stateTitleRenderer for localization.
 scrollView.spot_pullUpLoadView = moreDataLoader
 ```
