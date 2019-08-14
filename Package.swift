@@ -13,6 +13,5 @@ let package = Package(
 	dependencies: [],
 	targets: [
 		.target(name: "SpotPullRefresh", dependencies: []),
-		.testTarget(name: "SpotPullRefreshTests", dependencies: ["SpotPullRefresh"]),
 	]
 )
