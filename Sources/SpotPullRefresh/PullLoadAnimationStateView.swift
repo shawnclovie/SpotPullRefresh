@@ -10,7 +10,7 @@ import UIKit
 
 open class PullLoadAnimationStateView: PullLoadStateView {
 
-    var imageViewGroup = PullAnimatableImageViewGroup()
+    private var imageViewGroup = PullAnimatableImageViewGroup()
 	
 	public override init(_ refreshment: @escaping () -> Void) {
 		super.init(refreshment)
@@ -21,6 +21,8 @@ open class PullLoadAnimationStateView: PullLoadStateView {
 	required public init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+	
+	public var imageView: UIImageView {imageViewGroup.view}
 	
 	open override func layoutSubviews() {
 		super.layoutSubviews()

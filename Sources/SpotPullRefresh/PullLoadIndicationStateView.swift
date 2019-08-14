@@ -17,7 +17,8 @@ open class PullLoadIndicationStateView: PullLoadStateView {
             setNeedsLayout()
         }
     }
-    public let loadingView = UIActivityIndicatorView(style: .gray)
+    
+	public let loadingView = UIActivityIndicatorView(style: .gray)
     
 	public override init(_ refreshment: @escaping () -> Void) {
 		super.init(refreshment)

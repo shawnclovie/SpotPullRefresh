@@ -32,6 +32,8 @@ open class PullLoadStateView: PullLoadView {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	public var stateLabel: UILabel {stateLabelGroup.view}
+	
 	open override func layoutSubviews() {
 		super.layoutSubviews()
         if stateLabelGroup.view.constraints.isEmpty {

@@ -22,6 +22,8 @@ open class PullRefreshAnimationStateView: PullRefreshStateView {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
+	public var imageView: UIImageView {imageViewGroup.view}
+	
 	open override func layoutSubviews() {
 		super.layoutSubviews()
 		guard imageViewGroup.view.constraints.isEmpty else {return}

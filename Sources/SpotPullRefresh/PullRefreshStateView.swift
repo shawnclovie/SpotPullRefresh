@@ -15,7 +15,7 @@ open class PullRefreshStateView: PullRefreshView {
 	
 	public var lastUpdatedTimeTextRenderer: ((_ lastUpdatedTime: TimeInterval) -> String)?
 	
-	let lastUpdatedTimeLabel = UILabel()
+	public let lastUpdatedTimeLabel = UILabel()
 	private(set) var stateLabelGroup = PullStateLabelGroup()
 	
 	public var stateLabelMarginLeft: CGFloat
@@ -32,6 +32,8 @@ open class PullRefreshStateView: PullRefreshView {
 	required public init?(coder aDecoder: NSCoder) {
 		fatalError("init(coder:) has not been implemented")
 	}
+	
+	public var stateLabel: UILabel {stateLabelGroup.view}
 	
 	open override func layoutSubviews() {
 		super.layoutSubviews()
@@ -55,15 +57,6 @@ open class PullRefreshStateView: PullRefreshView {
 		super.willMove(toSuperview: newView)
 		updateStateLabel()
 		updateLastUpdateTimeLabel()
-	}
-	
-	public var stateLabel: UILabel {
-		stateLabelGroup.view
-	}
-	
-	public var lastUpdatedTimeLabelEnabled: Bool {
-		get {!lastUpdatedTimeLabel.isHidden}
-		set {lastUpdatedTimeLabel.isHidden = !newValue}
 	}
 	
 	var lastUpdatedTimeLabelWidth: CGFloat {
