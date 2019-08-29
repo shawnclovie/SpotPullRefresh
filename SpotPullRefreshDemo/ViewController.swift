@@ -12,13 +12,19 @@ class ViewController: UINavigationController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		let root = UIViewController(nibName: nil, bundle: nil)
-		root.navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .action, target: self, action: #selector(touchUpAction))
+		root.navigationItem.rightBarButtonItems = [
+			.init(title: "Push", style: .plain, target: self, action: #selector(touchUpPush)),
+			.init(title: "Present", style: .plain, target: self, action: #selector(touchUpPresent)),
+			]
 		viewControllers = [root]
-		touchUpAction()
 	}
 	
-	@objc private func touchUpAction() {
+	@objc private func touchUpPush() {
 		pushViewController(TestPullViewController(style: .grouped), animated: true)
+	}
+	
+	@objc private func touchUpPresent() {
+		present(TestPullViewController(style: .grouped), animated: true, completion: nil)
 	}
 }
 

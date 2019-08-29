@@ -77,12 +77,12 @@ open class PullLoadView: PullBaseView {
 		isNewPanGestureDetected = false
 	}
 	
-	open override func scrollView(_ view: UIScrollView, didChangeContentSize change: NSKeyValueObservedChange<CGSize>) {
+	open override func scrollView(_ view: UIScrollView, didChangeContentSize change: [NSKeyValueChangeKey : Any]?) {
 		super.scrollView(view, didChangeContentSize: change)
 		frame.origin.y = superScrollView?.contentSize.height ?? 0
 	}
 	
-	open override func scrollView(_ view: UIScrollView, didChangeContentOffset change: NSKeyValueObservedChange<CGPoint>) {
+	open override func scrollView(_ view: UIScrollView, didChangeContentOffset change: [NSKeyValueChangeKey : Any]?) {
 	   super.scrollView(view, didChangeContentOffset: change)
 		if state != .idle || !shouldAutomaticallyRefresh || frame.origin.y == 0 {
 			return
@@ -94,15 +94,19 @@ open class PullLoadView: PullBaseView {
 		// content height should over one screen
 		guard inset.top + contentH > scrollH else {return}
 		let viewHeight = bounds.height
-		// 防止手松开时连续调用
-		guard scrollView.contentOffset.y >= contentH - scrollH + viewHeight * abs(panRevealRateMayTriggerRefresh) + inset.bottom - viewHeight else {return}
-		// 当底部刷新控件完全出现时，才刷新
-		if change.newValue?.y ?? 0 <= change.oldValue?.y ?? 0 {return}
+		// avoid call to many times while losing
+		guard scrollView.contentOffset.y >= contentH - scrollH + viewHeight * abs(panRevealRateMayTriggerRefresh) + inset.bottom - viewHeight,
+			let change = change
+			else {return}
+		// refresh only if bottom controller appear totally.
+		let oldValue = change[.oldKey] as? CGPoint ?? .zero
+		let newValue = change[.newKey] as? CGPoint ?? .zero
+		if newValue.y <= oldValue.y {return}
 		beginRefresh()
 	}
 	
-	open override func scrollViewPanGesture(_ reco: UIGestureRecognizer, didChangeState change: NSKeyValueObservedChange<UIGestureRecognizer.State>) {
-		super.scrollViewPanGesture(reco, didChangeState: change)
+	open override func scrollViewPanGesture(_ view: UIScrollView, didChangeState change: [NSKeyValueChangeKey : Any]?) {
+		super.scrollViewPanGesture(view, didChangeState: change)
 		guard let scrollView = superScrollView, state == .idle else {return}
 		switch scrollView.panGestureRecognizer.state {
 		case .began:

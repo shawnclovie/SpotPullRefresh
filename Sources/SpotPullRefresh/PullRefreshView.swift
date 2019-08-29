@@ -84,7 +84,7 @@ open class PullRefreshView: PullBaseView {
 		}
     }
     
-	open override func scrollView(_ view: UIScrollView, didChangeContentOffset change: NSKeyValueObservedChange<CGPoint>) {
+	open override func scrollView(_ view: UIScrollView, didChangeContentOffset change: [NSKeyValueChangeKey : Any]?) {
 		super.scrollView(view, didChangeContentOffset: change)
         guard let scrollView = superScrollView,
 			let originalInset = scrollViewOriginalInset

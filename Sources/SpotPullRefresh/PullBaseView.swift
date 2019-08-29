@@ -27,6 +27,10 @@ open class PullBaseView: UIView {
     static let fastAnimationDuration = 0.25
     static let slowAnimationDuration = 0.4
 	
+	static let keyPathContentOffset = "contentOffset"
+	static let keyPathContentSize = "contentSize"
+	static let keyPathState = "state"
+	
 	open class func decorate(label: UILabel) {
 		label.font = labelFont
 		label.textColor = labelTextColor
@@ -54,8 +58,7 @@ open class PullBaseView: UIView {
 	}
 	
 	private var pan: UIPanGestureRecognizer?
-	
-	private var observers: [NSKeyValueObservation] = []
+	public private(set) weak var superScrollView: UIScrollView?
 	
 	public init(_ refreshment: @escaping ()->Void) {
 		self.refreshment = refreshment
@@ -68,18 +71,15 @@ open class PullBaseView: UIView {
 		fatalError("init(coder:) has not been implemented")
 	}
 	
-	var superScrollView: UIScrollView? {
-		superview as? UIScrollView
-	}
-	
 	public var isRefreshing: Bool {
-		return self.state == .refreshing || self.state == .willRefresh
+		state == .refreshing || state == .willRefresh
 	}
 	
 	override open func willMove(toSuperview newView: UIView?) {
 		super.willMove(toSuperview: newView)
 		removeObservers()
 		guard let scrollView = newView as? UIScrollView else {return}
+		superScrollView = scrollView
 		bounds.size.width = scrollView.bounds.width
 		frame.origin.x = -scrollView.spot_inset.left
 		scrollView.alwaysBounceVertical = true
@@ -114,14 +114,11 @@ open class PullBaseView: UIView {
 		}
 	}
 	
-	open func scrollView(_ view: UIScrollView, didChangeContentOffset change: NSKeyValueObservedChange<CGPoint>) {
-	}
+	open func scrollView(_ view: UIScrollView, didChangeContentOffset change: [NSKeyValueChangeKey : Any]?) {}
 	
-	open func scrollView(_ view: UIScrollView, didChangeContentSize change: NSKeyValueObservedChange<CGSize>) {
-	}
+	open func scrollView(_ view: UIScrollView, didChangeContentSize change: [NSKeyValueChangeKey : Any]?) {}
 	
-	open func scrollViewPanGesture(_ reco: UIGestureRecognizer, didChangeState change: NSKeyValueObservedChange<UIGestureRecognizer.State>) {
-	}
+	open func scrollViewPanGesture(_ view: UIScrollView, didChangeState change: [NSKeyValueChangeKey : Any]?) {}
 	
 	public func beginRefresh() {
 		UIView.animate(withDuration: Self.fastAnimationDuration) {
@@ -174,25 +171,35 @@ open class PullBaseView: UIView {
 	
 	private func addObservers(to view: UIScrollView) {
 		let options: NSKeyValueObservingOptions = [.new, .old]
-		observers = [
-			view.observe(\.contentOffset, options: options) {
-				guard !self.isHidden else {return}
-				self.scrollView($0, didChangeContentOffset: $1)
-			},
-			view.observe(\.contentSize, options: options, changeHandler: scrollView(_:didChangeContentSize:)),
-		]
+		view.addObserver(self, forKeyPath: Self.keyPathContentOffset, options: options, context: nil)
+		view.addObserver(self, forKeyPath: Self.keyPathContentSize, options: options, context: nil)
 		pan = view.panGestureRecognizer
-		if let pan = pan {
-			observers.append(pan.observe(\.state, options: options) {
-				guard !self.isHidden else {return}
-				self.scrollViewPanGesture($0, didChangeState: $1)
-			})
-		}
+		pan?.addObserver(self, forKeyPath: Self.keyPathState, options: options, context: nil)
 	}
 	
 	private func removeObservers() {
-		observers.forEach{$0.invalidate()}
-		observers.removeAll()
+		if let view = superview {
+			view.removeObserver(self, forKeyPath: Self.keyPathContentOffset)
+			view.removeObserver(self, forKeyPath: Self.keyPathContentSize)
+		}
+		pan?.removeObserver(self, forKeyPath: Self.keyPathState)
 		pan = nil
+	}
+	
+	open override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+		guard isUserInteractionEnabled,
+			let view = superScrollView else {return}
+		if keyPath == Self.keyPathContentSize {
+			scrollView(view, didChangeContentSize: change)
+		}
+		if !isHidden {
+			switch keyPath {
+			case Self.keyPathContentOffset:
+				self.scrollView(view, didChangeContentOffset: change)
+			case Self.keyPathState:
+				self.scrollViewPanGesture(view, didChangeState: change)
+			default:break
+			}
+		}
 	}
 }
