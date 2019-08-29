@@ -11,7 +11,14 @@ import SpotPullRefresh
 class ViewController: UINavigationController {
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		viewControllers = [TestPullViewController(style: .grouped)]
+		let root = UIViewController(nibName: nil, bundle: nil)
+		root.navigationItem.rightBarButtonItem = .init(barButtonSystemItem: .action, target: self, action: #selector(touchUpAction))
+		viewControllers = [root]
+		touchUpAction()
+	}
+	
+	@objc private func touchUpAction() {
+		pushViewController(TestPullViewController(style: .grouped), animated: true)
 	}
 }
 
