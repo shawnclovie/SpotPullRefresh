@@ -44,10 +44,11 @@ extension UIScrollView {
 	
 	public func spot_set(inset keyPath: WritableKeyPath<UIEdgeInsets, CGFloat>, _ value: CGFloat) {
 		var value = value
-		if #available(iOS 11.0, *) {
-			value -= (adjustedContentInset[keyPath: keyPath] - contentInset[keyPath: keyPath])
-		}
 		var newValue = contentInset
+		if #available(iOS 11.0, *) {
+			let adjusted = adjustedContentInset
+			value -= (adjusted[keyPath: keyPath] - newValue[keyPath: keyPath])
+		}
 		newValue[keyPath: keyPath] = value
 		contentInset = newValue
 	}
